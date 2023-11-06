@@ -15,7 +15,12 @@ def db_get_single(sql, pk) -> sqlite3.Row:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
         db_cursor.execute(sql, (pk,))
-        return db_cursor.fetchone()
+        result = db_cursor.fetchone()
+        # If a result is found, it is converted to a dictionary and returned. If no result is found, an empty list is returned
+        if result is not None:
+            return [dict(result)]
+        else:
+            return []
 
 
 def db_get_all(sql) -> list:
@@ -31,7 +36,7 @@ def db_get_all(sql) -> list:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
         db_cursor.execute(sql)
-        return db_cursor.fetchall()
+        return [dict(row) for row in db_cursor.fetchall()]
 
 
 def db_delete(sql, pk) -> int:
